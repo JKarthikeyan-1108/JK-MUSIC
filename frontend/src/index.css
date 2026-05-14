@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+	* {
+		@apply border-border;
+	}
+	body {
+		background-color: #000000;
+		color: #e5e2e1;
+		@apply antialiased;
+	}
+}
+
+@layer utilities {
+	/* Material Symbols base style */
+	.material-symbols-outlined {
+		font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+	}
+
+	/* Hide scrollbar for clean carousels */
+	.no-scrollbar::-webkit-scrollbar {
+		display: none;
+	}
+	.no-scrollbar {
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+	}
+
+	/* Custom scrollbar */
+	.custom-scrollbar::-webkit-scrollbar {
+		width: 8px;
+	}
+	.custom-scrollbar::-webkit-scrollbar-track {
+		background: #131313;
+	}
+	.custom-scrollbar::-webkit-scrollbar-thumb {
+		background: #353534;
+		border-radius: 4px;
+	}
+	.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+		background: #3d4a3d;
+	}
+
+	/* Glass panel effect */
+	.glass-panel {
+		background: rgba(18, 18, 18, 0.7);
+		backdrop-filter: blur(12px);
+		-webkit-backdrop-filter: blur(12px);
+	}
+
+	/* Lyrics gradient mask */
+	.lyrics-gradient {
+		mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
+	}
+
+	/* Artist hero gradient */
+	.artist-hero-gradient {
+		background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.8) 100%);
+	}
+}
