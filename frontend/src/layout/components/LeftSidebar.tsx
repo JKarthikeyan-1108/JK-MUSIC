@@ -23,7 +23,7 @@ const LeftSidebar = () => {
 					</span>
 				</div>
 				<div>
-					<h1 className='font-headline-lg text-headline-lg text-primary tracking-tighter'>Melodix</h1>
+					<h1 className='font-headline-lg text-headline-lg text-primary tracking-tighter'>JK Music</h1>
 					<p className='font-label-md text-label-md text-on-surface-variant'>Premium</p>
 				</div>
 			</div>
