@@ -15,7 +15,7 @@ export default function NotFoundPage() {
 					</span>
 				</div>
 				<div className='absolute bottom-[20%] right-[15%] opacity-10'>
-					<span className='material-symbols-outlined text-primary text-[80px]'>
+					<span className='material-symbols-outlined text-apple-red text-[80px]'>
 						headphones
 					</span>
 				</div>
@@ -26,9 +26,9 @@ export default function NotFoundPage() {
 				{/* Animated Icon */}
 				<div className='flex justify-center mb-xl'>
 					<div className='relative'>
-						<div className='w-32 h-32 bg-surface-container-low rounded-full flex items-center justify-center border border-outline-variant/30 shadow-2xl'>
+						<div className='w-32 h-32 apple-glass rounded-full flex items-center justify-center border border-separator/30 shadow-2xl'>
 							<span
-								className='material-symbols-outlined text-primary text-[64px] animate-bounce'
+								className='material-symbols-outlined text-apple-red text-[64px] animate-bounce'
 								style={{ fontVariationSettings: "'FILL' 1", animationDuration: '2s' }}
 							>
 								music_off
@@ -40,15 +40,15 @@ export default function NotFoundPage() {
 				</div>
 
 				{/* Error Code */}
-				<h1 className='font-display-lg text-[96px] md:text-[128px] font-extrabold text-on-surface leading-none tracking-tighter'>
-					4<span className='text-primary'>0</span>4
+				<h1 className='font-display-lg text-[96px] md:text-[128px] font-extrabold text-white leading-none tracking-tighter'>
+					4<span className='text-apple-red'>0</span>4
 				</h1>
 
 				{/* Error Message */}
-				<h2 className='font-headline-lg text-headline-lg text-on-surface mt-md mb-sm'>
+				<h2 className='font-headline-lg text-headline-lg text-white mt-md mb-sm'>
 					Page not found
 				</h2>
-				<p className='font-body-lg text-body-lg text-on-surface-variant max-w-md mx-auto mb-xl'>
+				<p className='font-body-lg text-body-lg text-text-secondary max-w-md mx-auto mb-xl'>
 					Looks like this track got lost in the shuffle. The page you're looking for doesn't exist or has been moved.
 				</p>
 
@@ -56,14 +56,14 @@ export default function NotFoundPage() {
 				<div className='flex flex-col sm:flex-row gap-md justify-center items-center'>
 					<button
 						onClick={() => navigate(-1)}
-						className='flex items-center justify-center gap-sm border-2 border-outline-variant text-on-surface px-xl py-md rounded-full font-bold hover:border-on-surface hover:bg-on-surface/5 transition-all w-full sm:w-auto'
+						className='flex items-center justify-center gap-sm border-2 border-separator text-white px-xl py-md rounded-full font-bold hover:border-on-surface hover:bg-on-surface/5 transition-all w-full sm:w-auto'
 					>
 						<span className='material-symbols-outlined text-[20px]'>arrow_back</span>
 						Go Back
 					</button>
 					<button
 						onClick={() => navigate("/")}
-						className='flex items-center justify-center gap-sm bg-primary text-background px-xl py-md rounded-full font-bold hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20 w-full sm:w-auto'
+						className='flex items-center justify-center gap-sm bg-apple-red text-background px-xl py-md rounded-full font-bold hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20 w-full sm:w-auto'
 					>
 						<span className='material-symbols-outlined text-[20px]' style={{ fontVariationSettings: "'FILL' 1" }}>
 							home
@@ -73,12 +73,12 @@ export default function NotFoundPage() {
 				</div>
 
 				{/* Fun suggestion */}
-				<div className='mt-xl bg-surface-container-low/80 backdrop-blur-md border border-outline-variant/20 rounded-xl p-lg inline-flex items-center gap-md'>
-					<span className='material-symbols-outlined text-primary text-[24px]' style={{ fontVariationSettings: "'FILL' 1" }}>
+				<div className='mt-xl apple-glass/80 backdrop-blur-md border border-separator/20 rounded-xl p-lg inline-flex items-center gap-md'>
+					<span className='material-symbols-outlined text-apple-red text-[24px]' style={{ fontVariationSettings: "'FILL' 1" }}>
 						lightbulb
 					</span>
-					<p className='font-body-sm text-body-sm text-on-surface-variant text-left'>
-						<span className='text-on-surface font-bold'>Tip:</span> Try searching for what you're looking for on the Home page.
+					<p className='font-body-sm text-body-sm text-text-secondary text-left'>
+						<span className='text-white font-bold'>Tip:</span> Try searching for what you're looking for on the Home page.
 					</p>
 				</div>
 			</div>

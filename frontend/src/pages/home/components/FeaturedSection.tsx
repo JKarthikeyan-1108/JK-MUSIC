@@ -38,26 +38,26 @@ const FeaturedSection = () => {
 
 			{/* Content */}
 			<div className='absolute bottom-lg left-lg z-20 space-y-md'>
-				<div className='flex items-center gap-xs text-primary'>
+				<div className='flex items-center gap-xs text-apple-red'>
 					<span className='material-symbols-outlined text-[18px]' style={{ fontVariationSettings: "'FILL' 1" }}>
 						verified
 					</span>
 					<span className='font-label-md text-label-md uppercase tracking-widest'>Featured</span>
 				</div>
-				<h2 className='font-display-lg text-display-lg text-on-surface'>
+				<h2 className='font-display-lg text-display-lg text-white'>
 					{heroSong.title}
 				</h2>
-				<p className='text-on-surface-variant font-body-lg max-w-xl'>
+				<p className='text-text-secondary font-body-lg max-w-xl'>
 					{heroSong.artist}
 				</p>
 				<div className='flex items-center gap-md'>
-					<button className='bg-primary text-background px-xl py-md rounded-full font-bold flex items-center gap-sm hover:scale-105 active:scale-95 transition-all'>
+					<button className='bg-apple-red text-background px-xl py-md rounded-full font-bold flex items-center gap-sm hover:scale-105 active:scale-95 transition-all'>
 						<span className='material-symbols-outlined' style={{ fontVariationSettings: "'FILL' 1" }}>
 							{isHeroPlaying ? 'pause' : 'play_arrow'}
 						</span>
 						{isHeroPlaying ? 'Pause' : 'Play Now'}
 					</button>
-					<button className='border border-outline text-on-surface px-xl py-md rounded-full font-bold hover:bg-on-surface/10 transition-all'>
+					<button className='border border-outline text-white px-xl py-md rounded-full font-bold hover:bg-on-surface/10 transition-all'>
 						Follow
 					</button>
 				</div>

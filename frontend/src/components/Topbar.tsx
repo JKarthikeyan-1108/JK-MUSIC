@@ -17,13 +17,13 @@ const Topbar = () => {
 				<div className='hidden md:flex gap-sm'>
 					<button
 						onClick={() => window.history.back()}
-						className='w-8 h-8 rounded-full bg-surface-container-lowest flex items-center justify-center text-on-surface'
+						className='w-8 h-8 rounded-full bg-surface-container-lowest flex items-center justify-center text-white'
 					>
 						<span className='material-symbols-outlined'>chevron_left</span>
 					</button>
 					<button
 						onClick={() => window.history.forward()}
-						className='w-8 h-8 rounded-full bg-surface-container-lowest flex items-center justify-center text-on-surface opacity-50'
+						className='w-8 h-8 rounded-full bg-surface-container-lowest flex items-center justify-center text-white opacity-50'
 					>
 						<span className='material-symbols-outlined'>chevron_right</span>
 					</button>
@@ -42,10 +42,10 @@ const Topbar = () => {
 				)}
 
 				<div className='flex items-center gap-sm'>
-					<span className='material-symbols-outlined p-xs text-on-surface-variant hover:text-primary transition-colors cursor-pointer'>
+					<span className='material-symbols-outlined p-xs text-text-secondary hover:text-apple-red transition-colors cursor-pointer'>
 						notifications
 					</span>
-					<span className='material-symbols-outlined p-xs text-on-surface-variant hover:text-primary transition-colors cursor-pointer'>
+					<span className='material-symbols-outlined p-xs text-text-secondary hover:text-apple-red transition-colors cursor-pointer'>
 						settings
 					</span>
 				</div>
@@ -54,7 +54,7 @@ const Topbar = () => {
 					<SignInOAuthButtons />
 				</SignedOut>
 
-				<div className='w-8 h-8 rounded-full overflow-hidden ml-sm border-2 border-outline-variant'>
+				<div className='w-8 h-8 rounded-full overflow-hidden ml-sm border-2 border-separator'>
 					<UserButton />
 				</div>
 			</div>

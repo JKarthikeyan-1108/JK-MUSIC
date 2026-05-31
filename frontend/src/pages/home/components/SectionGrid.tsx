@@ -14,8 +14,8 @@ const SectionGrid = ({ songs, title, isLoading }: SectionGridProps) => {
 	return (
 		<div>
 			<div className='flex justify-between items-end mb-md'>
-				<h3 className='font-title-md text-title-md text-on-surface'>{title}</h3>
-				<a className='text-label-md font-bold text-on-surface-variant hover:text-primary transition-colors cursor-pointer'>
+				<h3 className='font-title-md text-title-md text-white'>{title}</h3>
+				<a className='text-label-md font-bold text-text-secondary hover:text-apple-red transition-colors cursor-pointer'>
 					Show all
 				</a>
 			</div>
@@ -24,7 +24,7 @@ const SectionGrid = ({ songs, title, isLoading }: SectionGridProps) => {
 				{songs.map((song) => (
 					<div
 						key={song._id}
-						className='group bg-surface-container-low p-md rounded-lg hover:bg-surface-container-high transition-all cursor-pointer relative'
+						className='group apple-glass p-md rounded-lg hover:bg-surface-container-high transition-all cursor-pointer relative'
 					>
 						<div className='relative aspect-square rounded-lg overflow-hidden mb-md shadow-lg'>
 							<img
@@ -34,10 +34,10 @@ const SectionGrid = ({ songs, title, isLoading }: SectionGridProps) => {
 							/>
 							<PlayButton song={song} />
 						</div>
-						<h4 className='font-title-md text-body-lg truncate text-on-surface'>
+						<h4 className='font-title-md text-body-lg truncate text-white'>
 							{song.title}
 						</h4>
-						<p className='font-body-sm text-body-sm text-on-surface-variant mt-1 line-clamp-2'>
+						<p className='font-body-sm text-body-sm text-text-secondary mt-1 line-clamp-2'>
 							{song.artist}
 						</p>
 					</div>

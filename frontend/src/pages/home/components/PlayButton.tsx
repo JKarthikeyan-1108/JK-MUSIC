@@ -14,7 +14,7 @@ const PlayButton = ({ song }: { song: Song }) => {
 	return (
 		<div
 			onClick={handlePlay}
-			className={`absolute bottom-2 right-2 w-12 h-12 bg-primary rounded-full flex items-center justify-center shadow-xl
+			className={`absolute bottom-2 right-2 w-12 h-12 bg-apple-red rounded-full flex items-center justify-center shadow-xl
 				transition-all opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0
 				${isCurrentSong ? '!opacity-100 !translate-y-0' : ''}`}
 		>

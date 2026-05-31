@@ -23,10 +23,10 @@ const SettingsModal = ({ onClose }: SettingsModalProps) => {
 
 	return (
 		<div className='fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200'>
-			<div className='bg-surface-container-high w-full max-w-md rounded-2xl border border-outline-variant/30 shadow-2xl overflow-hidden'>
+			<div className='bg-surface-container-high w-full max-w-md rounded-2xl border border-separator/30 shadow-2xl overflow-hidden'>
 				{/* Header */}
-				<div className='flex items-center justify-between p-lg border-b border-outline-variant/30'>
-					<h2 className='font-title-lg text-title-lg font-bold text-on-surface'>Settings</h2>
+				<div className='flex items-center justify-between p-lg border-b border-separator/30'>
+					<h2 className='font-title-lg text-title-lg font-bold text-white'>Settings</h2>
 					<button
 						onClick={onClose}
 						className='w-10 h-10 rounded-full hover:bg-surface-variant flex items-center justify-center transition-colors'
@@ -42,13 +42,13 @@ const SettingsModal = ({ onClose }: SettingsModalProps) => {
 						<div className='flex items-center gap-md'>
 							<img src={user.imageUrl} alt='Profile' className='w-16 h-16 rounded-full' />
 							<div>
-								<h3 className='font-title-md text-title-md font-bold text-on-surface'>
+								<h3 className='font-title-md text-title-md font-bold text-white'>
 									{user.fullName || "User"}
 								</h3>
-								<p className='font-body-sm text-body-sm text-on-surface-variant'>
+								<p className='font-body-sm text-body-sm text-text-secondary'>
 									{user.primaryEmailAddress?.emailAddress}
 								</p>
-								<span className='inline-block mt-xs bg-primary/20 text-primary px-sm py-xs rounded-full font-label-sm text-label-sm uppercase tracking-wider'>
+								<span className='inline-block mt-xs bg-apple-red/20 text-apple-red px-sm py-xs rounded-full font-label-sm text-label-sm uppercase tracking-wider'>
 									Premium
 								</span>
 							</div>
@@ -57,13 +57,13 @@ const SettingsModal = ({ onClose }: SettingsModalProps) => {
 
 					{/* Playback Settings */}
 					<div>
-						<h3 className='font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-md'>
+						<h3 className='font-label-md text-label-md text-text-secondary uppercase tracking-wider mb-md'>
 							Playback
 						</h3>
 						<div className='space-y-md'>
 							<div className='flex items-center justify-between'>
-								<span className='font-body-md text-body-md text-on-surface'>Default Volume</span>
-								<span className='font-body-md text-body-md text-primary font-bold'>{volume}%</span>
+								<span className='font-body-md text-body-md text-white'>Default Volume</span>
+								<span className='font-body-md text-body-md text-apple-red font-bold'>{volume}%</span>
 							</div>
 							<input
 								type='range'
@@ -78,8 +78,8 @@ const SettingsModal = ({ onClose }: SettingsModalProps) => {
 								className='w-full accent-primary bg-surface-container-highest rounded-full appearance-none h-2'
 							/>
 							<div className='flex items-center justify-between mt-sm'>
-								<span className='font-body-md text-body-md text-on-surface'>Audio Quality</span>
-								<select className='bg-surface-container-low border border-outline-variant/30 rounded-lg px-md py-xs text-on-surface outline-none focus:border-primary'>
+								<span className='font-body-md text-body-md text-white'>Audio Quality</span>
+								<select className='apple-glass border border-separator/30 rounded-lg px-md py-xs text-white outline-none focus:border-primary'>
 									<option>Automatic</option>
 									<option>High</option>
 									<option>Very High</option>
@@ -90,15 +90,15 @@ const SettingsModal = ({ onClose }: SettingsModalProps) => {
 
 					{/* App Settings */}
 					<div>
-						<h3 className='font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-md'>
+						<h3 className='font-label-md text-label-md text-text-secondary uppercase tracking-wider mb-md'>
 							Appearance
 						</h3>
 						<div className='flex items-center justify-between'>
-							<span className='font-body-md text-body-md text-on-surface'>Theme</span>
+							<span className='font-body-md text-body-md text-white'>Theme</span>
 							<select
 								value={theme}
 								onChange={(e) => setTheme(e.target.value)}
-								className='bg-surface-container-low border border-outline-variant/30 rounded-lg px-md py-xs text-on-surface outline-none focus:border-primary'
+								className='apple-glass border border-separator/30 rounded-lg px-md py-xs text-white outline-none focus:border-primary'
 							>
 								<option>Dark</option>
 								<option>Light (Coming Soon)</option>
@@ -108,7 +108,7 @@ const SettingsModal = ({ onClose }: SettingsModalProps) => {
 					</div>
 
 					{/* Danger Zone */}
-					<div className='pt-md border-t border-outline-variant/30'>
+					<div className='pt-md border-t border-separator/30'>
 						<SignOutButton>
 							<button className='w-full py-md rounded-lg bg-error-container/20 text-error hover:bg-error-container/40 transition-colors font-bold text-label-lg flex items-center justify-center gap-sm'>
 								<span className='material-symbols-outlined'>logout</span>

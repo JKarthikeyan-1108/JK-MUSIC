@@ -5,11 +5,11 @@ const MobileBottomNav = () => {
 	const isActive = (path: string) => location.pathname === path;
 
 	return (
-		<nav className='md:hidden fixed bottom-0 left-0 right-0 bg-surface-container/95 backdrop-blur-lg flex justify-around items-center py-sm z-50 border-t border-outline-variant'>
+		<nav className='md:hidden fixed bottom-0 left-0 right-0 bg-surface-container/95 backdrop-blur-lg flex justify-around items-center py-sm z-50 border-t border-separator'>
 			<Link
 				to='/'
 				className={`flex flex-col items-center gap-xs ${
-					isActive('/') ? 'text-primary font-bold' : 'text-on-surface-variant font-medium'
+					isActive('/') ? 'text-apple-red font-bold' : 'text-text-secondary font-medium'
 				}`}
 			>
 				<span className='material-symbols-outlined' style={isActive('/') ? { fontVariationSettings: "'FILL' 1" } : undefined}>
@@ -20,7 +20,7 @@ const MobileBottomNav = () => {
 			<Link
 				to='/search'
 				className={`flex flex-col items-center gap-xs ${
-					isActive('/search') ? 'text-primary font-bold' : 'text-on-surface-variant font-medium'
+					isActive('/search') ? 'text-apple-red font-bold' : 'text-text-secondary font-medium'
 				}`}
 			>
 				<span className='material-symbols-outlined' style={isActive('/search') ? { fontVariationSettings: "'FILL' 1" } : undefined}>search</span>
@@ -29,7 +29,7 @@ const MobileBottomNav = () => {
 			<Link
 				to='/library'
 				className={`flex flex-col items-center gap-xs ${
-					isActive('/library') ? 'text-primary font-bold' : 'text-on-surface-variant font-medium'
+					isActive('/library') ? 'text-apple-red font-bold' : 'text-text-secondary font-medium'
 				}`}
 			>
 				<span className='material-symbols-outlined' style={isActive('/library') ? { fontVariationSettings: "'FILL' 1" } : undefined}>library_music</span>

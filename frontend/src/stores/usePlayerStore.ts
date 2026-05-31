@@ -50,7 +50,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
 		if (socket.auth) {
 			socket.emit("update_activity", {
 				userId: socket.auth.userId,
-				activity: `Playing ${song.title} by ${song.artist}`,
+				activity: `Playing ${song.title} by ${song.artist}`, songId: song._id,
 			});
 		}
 		set({
@@ -68,7 +68,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
 		if (socket.auth) {
 			socket.emit("update_activity", {
 				userId: socket.auth.userId,
-				activity: `Playing ${song.title} by ${song.artist}`,
+				activity: `Playing ${song.title} by ${song.artist}`, songId: song._id,
 			});
 		}
 
@@ -90,6 +90,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
 				userId: socket.auth.userId,
 				activity:
 					willStartPlaying && currentSong ? `Playing ${currentSong.title} by ${currentSong.artist}` : "Idle",
+				...(willStartPlaying && currentSong ? { songId: currentSong._id } : {})
 			});
 		}
 
@@ -140,7 +141,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
 			if (socket.auth) {
 				socket.emit("update_activity", {
 					userId: socket.auth.userId,
-					activity: `Playing ${nextSong.title} by ${nextSong.artist}`,
+					activity: `Playing ${nextSong.title} by ${nextSong.artist}`, songId: nextSong._id,
 				});
 			}
 
@@ -174,7 +175,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
 			if (socket.auth) {
 				socket.emit("update_activity", {
 					userId: socket.auth.userId,
-					activity: `Playing ${prevSong.title} by ${prevSong.artist}`,
+					activity: `Playing ${prevSong.title} by ${prevSong.artist}`, songId: prevSong._id,
 				});
 			}
 

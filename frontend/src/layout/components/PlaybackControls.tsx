@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import ImmersivePlayer from "./ImmersivePlayer";
 import QueuePanel from "./QueuePanel";
 import { useUserStore } from "@/stores/useUserStore";
+import { Play, Pause, SkipBack, SkipForward, Shuffle, Repeat, ListMusic, AlignLeft, Airplay, Volume2, VolumeX, Heart } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const formatTime = (seconds: number) => {
 	const minutes = Math.floor(seconds / 60);
@@ -25,6 +27,9 @@ export const PlaybackControls = () => {
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 	const isDraggingRef = useRef(false);
 	const prevVolumeRef = useRef(volume);
+
+	// Animation keys
+	const songKey = currentSong?._id || "none";
 
 	useEffect(() => {
 		audioRef.current = document.querySelector("audio");
@@ -78,159 +83,168 @@ export const PlaybackControls = () => {
 		<>
 			{isExpanded && <ImmersivePlayer onClose={() => setIsExpanded(false)} />}
 			{isQueueOpen && <QueuePanel onClose={toggleQueue} />}
-			<footer className='fixed bottom-0 left-0 right-0 bg-surface-container-lowest/95 backdrop-blur-xl border-t border-outline-variant p-md z-50'>
-				<div className='flex items-center justify-between gap-xl'>
-				{/* Track Info */}
-				<div className='flex items-center gap-md min-w-0 flex-1'>
-					{currentSong ? (
-						<>
-							<div className='w-14 h-14 rounded-lg overflow-hidden shrink-0'>
-								<img
-									src={currentSong.imageUrl}
-									alt={currentSong.title}
-									className='w-full h-full object-cover'
-								/>
-							</div>
-							<div className='min-w-0 hidden sm:block'>
-								<h5 className='text-body-lg font-bold text-on-surface truncate'>
-									{currentSong.title}
-								</h5>
-								<p className='text-body-sm text-on-surface-variant truncate'>
-									{currentSong.artist}
-								</p>
-							</div>
-							<div className='hidden sm:flex items-center gap-2 ml-md'>
-								<button 
-									onClick={() => toggleLike(currentSong._id)}
-									className={`transition-colors ${likedSongs.includes(currentSong._id) ? 'text-primary' : 'text-on-surface-variant hover:text-primary'}`}
+			<footer className='fixed bottom-0 md:bottom-0 left-0 right-0 h-[68px] md:h-[80px] apple-glass-strong border-t border-separator z-50 transition-all'>
+				<div className='flex items-center justify-between h-full px-4 md:px-6'>
+					{/* Track Info */}
+					<div className='flex items-center gap-3 md:gap-4 min-w-0 flex-1 h-full' onClick={() => window.innerWidth < 768 && setIsExpanded(true)}>
+						<AnimatePresence mode="wait">
+							{currentSong ? (
+								<motion.div
+									key={songKey}
+									initial={{ opacity: 0, y: 10 }}
+									animate={{ opacity: 1, y: 0 }}
+									exit={{ opacity: 0, y: -10 }}
+									transition={{ duration: 0.3 }}
+									className="flex items-center gap-3 w-full"
 								>
-									<span className='material-symbols-outlined text-[20px]' style={likedSongs.includes(currentSong._id) ? { fontVariationSettings: "'FILL' 1" } : undefined}>
-										favorite
-									</span>
-								</button>
-								<button 
-									onClick={() => setIsExpanded(true)}
-									className='text-on-surface-variant hover:text-on-surface transition-colors'
-									title='Expand Player'
-								>
-									<span className='material-symbols-outlined text-[20px]'>open_in_full</span>
-								</button>
-							</div>
-						</>
-					) : (
-						<div className='w-14 h-14 rounded-lg bg-surface-container-high shrink-0' />
-					)}
-				</div>
-
-				{/* Controls */}
-				<div className='flex flex-col items-center gap-xs flex-1 max-w-2xl'>
-					<div className='flex items-center gap-lg'>
-						<button
-							onClick={toggleShuffle}
-							className={`hidden sm:block transition-colors ${isShuffle ? 'text-primary' : 'text-on-surface-variant hover:text-on-surface'}`}
-						>
-							<span className='material-symbols-outlined'>shuffle</span>
-						</button>
-
-						<button
-							onClick={playPrevious}
-							disabled={!currentSong}
-							className='text-on-surface hover:text-primary disabled:opacity-40'
-						>
-							<span className='material-symbols-outlined text-[28px]' style={{ fontVariationSettings: "'FILL' 1" }}>
-								skip_previous
-							</span>
-						</button>
-
-						<button
-							onClick={togglePlay}
-							disabled={!currentSong}
-							className='w-10 h-10 bg-on-surface rounded-full flex items-center justify-center text-background hover:scale-105 transition-transform disabled:opacity-40'
-						>
-							<span className='material-symbols-outlined text-[32px]' style={{ fontVariationSettings: "'FILL' 1" }}>
-								{isPlaying ? 'pause' : 'play_arrow'}
-							</span>
-						</button>
-
-						<button
-							onClick={playNext}
-							disabled={!currentSong}
-							className='text-on-surface hover:text-primary disabled:opacity-40'
-						>
-							<span className='material-symbols-outlined text-[28px]' style={{ fontVariationSettings: "'FILL' 1" }}>
-								skip_next
-							</span>
-						</button>
-
-						<button
-							onClick={toggleRepeat}
-							className={`hidden sm:block transition-colors ${isRepeat ? 'text-primary' : 'text-on-surface-variant hover:text-on-surface'}`}
-						>
-							<span className='material-symbols-outlined'>repeat</span>
-						</button>
+									<motion.div 
+										className='w-12 h-12 md:w-14 md:h-14 rounded-card overflow-hidden shrink-0 shadow-lg cursor-pointer'
+										whileHover={{ scale: 1.05 }}
+										onClick={(e) => { e.stopPropagation(); setIsExpanded(true); }}
+										initial={{ scale: 0.8 }}
+										animate={{ scale: 1 }}
+										transition={{ type: "spring", stiffness: 300, damping: 20 }}
+									>
+										<img
+											src={currentSong.imageUrl}
+											alt={currentSong.title}
+											className='w-full h-full object-cover'
+											crossOrigin="anonymous"
+										/>
+									</motion.div>
+									<div className='min-w-0 flex-1 md:flex-none'>
+										<h5 className='text-body-md md:text-title-sm font-semibold text-white truncate'>
+											{currentSong.title}
+										</h5>
+										<p className='text-caption text-text-secondary truncate'>
+											{currentSong.artist}
+										</p>
+									</div>
+									<div className='hidden md:flex items-center ml-2'>
+										<button 
+											onClick={(e) => { e.stopPropagation(); toggleLike(currentSong._id); }}
+											className={`transition-colors p-2 rounded-full hover:bg-white/5 ${likedSongs.includes(currentSong._id) ? 'text-apple-red' : 'text-text-secondary hover:text-white'}`}
+										>
+											<Heart size={20} fill={likedSongs.includes(currentSong._id) ? 'currentColor' : 'none'} />
+										</button>
+									</div>
+								</motion.div>
+							) : (
+								<div className='w-12 h-12 md:w-14 md:h-14 rounded-card bg-white/5 shrink-0' />
+							)}
+						</AnimatePresence>
 					</div>
 
-					<div className='w-full hidden sm:flex items-center gap-sm px-lg'>
-						<span className='text-label-md font-label-md text-on-surface-variant'>
-							{formatTime(currentTime)}
-						</span>
-						<Slider
-							value={[currentTime]}
-							max={duration || 100}
-							step={1}
-							className='flex-1 hover:cursor-grab active:cursor-grabbing'
-							onValueChange={(value) => {
-								setCurrentTime(value[0]);
-								isDraggingRef.current = true;
-							}}
-							onValueCommit={(value) => {
-								if (audioRef.current) {
-									audioRef.current.currentTime = value[0];
-								}
-								isDraggingRef.current = false;
-							}}
-						/>
-						<span className='text-label-md font-label-md text-on-surface-variant'>
-							{formatTime(duration)}
-						</span>
-					</div>
-				</div>
+					{/* Center Controls */}
+					<div className='hidden md:flex flex-col items-center justify-center gap-2 flex-1 max-w-[480px] h-full'>
+						<div className='flex items-center gap-6'>
+							<button
+								onClick={toggleShuffle}
+								className={`transition-colors ${isShuffle ? 'text-apple-red' : 'text-text-secondary hover:text-white'}`}
+							>
+								<Shuffle size={20} />
+							</button>
 
-				{/* Volume & Extra */}
-				<div className='hidden lg:flex items-center justify-end gap-md flex-1'>
-					<span className='material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-on-surface'>
-						mic_external_on
-					</span>
-					<button onClick={toggleQueue} className={`transition-colors ${isQueueOpen ? 'text-primary' : 'text-on-surface-variant hover:text-on-surface'}`}>
-						<span className='material-symbols-outlined'>
-							queue_music
-						</span>
-					</button>
-					<span className='material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-on-surface'>
-						devices
-					</span>
-					<div className='flex items-center gap-sm w-32'>
-						<button onClick={toggleMute}>
-							<span className='material-symbols-outlined text-on-surface-variant'>
-								{volume === 0 ? 'volume_off' : 'volume_up'}
+							<button
+								onClick={playPrevious}
+								disabled={!currentSong}
+								className='text-text-secondary hover:text-white disabled:opacity-40 transition-colors'
+							>
+								<SkipBack size={24} fill="currentColor" />
+							</button>
+
+							<button
+								onClick={togglePlay}
+								disabled={!currentSong}
+								className='w-10 h-10 bg-white rounded-full flex items-center justify-center text-black hover:scale-105 active:scale-95 transition-all disabled:opacity-40'
+							>
+								{isPlaying ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" className="ml-1" />}
+							</button>
+
+							<button
+								onClick={playNext}
+								disabled={!currentSong}
+								className='text-text-secondary hover:text-white disabled:opacity-40 transition-colors'
+							>
+								<SkipForward size={24} fill="currentColor" />
+							</button>
+
+							<button
+								onClick={toggleRepeat}
+								className={`transition-colors ${isRepeat ? 'text-apple-red' : 'text-text-secondary hover:text-white'}`}
+							>
+								<Repeat size={20} />
+							</button>
+						</div>
+
+						<div className='w-full flex items-center gap-3'>
+							<span className='text-caption text-text-tertiary w-10 text-right'>
+								{formatTime(currentTime)}
 							</span>
+							<Slider
+								value={[currentTime]}
+								max={duration || 100}
+								step={1}
+								className='flex-1 hover:cursor-pointer'
+								onValueChange={(value) => {
+									setCurrentTime(value[0]);
+									isDraggingRef.current = true;
+								}}
+								onValueCommit={(value) => {
+									if (audioRef.current) {
+										audioRef.current.currentTime = value[0];
+									}
+									isDraggingRef.current = false;
+								}}
+							/>
+							<span className='text-caption text-text-tertiary w-10'>
+								{duration ? formatTime(duration) : "-:--"}
+							</span>
+						</div>
+					</div>
+
+					{/* Right Controls */}
+					<div className='hidden lg:flex items-center justify-end gap-4 flex-1 h-full'>
+						<button onClick={() => setIsExpanded(true)} className='text-text-secondary hover:text-white transition-colors'>
+							<AlignLeft size={18} />
 						</button>
-						<Slider
-							value={[volume]}
-							max={100}
-							step={1}
-							className='flex-1 hover:cursor-grab active:cursor-grabbing'
-							onValueChange={(value) => {
-								setVolume(value[0]);
-								localStorage.setItem("playerVolume", value[0].toString());
-								if (audioRef.current) {
-									audioRef.current.volume = value[0] / 100;
-								}
-							}}
-						/>
+						<button onClick={toggleQueue} className={`transition-colors ${isQueueOpen ? 'text-apple-red' : 'text-text-secondary hover:text-white'}`}>
+							<ListMusic size={18} />
+						</button>
+						<button className='text-text-secondary hover:text-white transition-colors'>
+							<Airplay size={18} />
+						</button>
+						<div className='flex items-center gap-2 w-32 group'>
+							<button onClick={toggleMute} className='text-text-secondary group-hover:text-white transition-colors'>
+								{volume === 0 ? <VolumeX size={18} /> : <Volume2 size={18} />}
+							</button>
+							<Slider
+								value={[volume]}
+								max={100}
+								step={1}
+								className='flex-1 hover:cursor-pointer'
+								onValueChange={(value) => {
+									setVolume(value[0]);
+									localStorage.setItem("playerVolume", value[0].toString());
+									if (audioRef.current) {
+										audioRef.current.volume = value[0] / 100;
+									}
+								}}
+							/>
+						</div>
+					</div>
+					
+					{/* Mobile Play Button */}
+					<div className='md:hidden flex items-center shrink-0'>
+						<button
+							onClick={(e) => { e.stopPropagation(); togglePlay(); }}
+							disabled={!currentSong}
+							className='w-10 h-10 flex items-center justify-center text-white active:scale-95 transition-all disabled:opacity-40'
+						>
+							{isPlaying ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" />}
+						</button>
 					</div>
 				</div>
-			</div>
 			</footer>
 		</>
 	);

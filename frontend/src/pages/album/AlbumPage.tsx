@@ -1,7 +1,9 @@
 import { useMusicStore } from "@/stores/useMusicStore";
 import { usePlayerStore } from "@/stores/usePlayerStore";
 import { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { useAccentColor } from "@/hooks/useAccentColor";
+import { Play, Pause, MoreHorizontal, Heart, Shuffle, ArrowLeft } from "lucide-react";
 
 const formatDuration = (seconds: number) => {
 	const minutes = Math.floor(seconds / 60);
@@ -11,8 +13,10 @@ const formatDuration = (seconds: number) => {
 
 const AlbumPage = () => {
 	const { albumId } = useParams();
+	const navigate = useNavigate();
 	const { fetchAlbumById, currentAlbum, isLoading } = useMusicStore();
 	const { currentSong, isPlaying, playAlbum, togglePlay } = usePlayerStore();
+	const accentColor = useAccentColor(currentAlbum?.imageUrl);
 
 	useEffect(() => {
 		if (albumId) fetchAlbumById(albumId);
@@ -20,8 +24,8 @@ const AlbumPage = () => {
 
 	if (isLoading) {
 		return (
-			<div className='min-h-full bg-background animate-pulse'>
-				<div className='h-[400px] bg-surface-container-high' />
+			<div className='h-full flex flex-col bg-background'>
+				<div className='h-[400px] w-full animate-pulse bg-surface-container' />
 			</div>
 		);
 	}
@@ -41,139 +45,135 @@ const AlbumPage = () => {
 	const isAlbumPlaying = isPlaying && currentAlbum?.songs.some((song) => song._id === currentSong?._id);
 
 	return (
-		<div className='min-h-full pb-32'>
-			{/* TopAppBar */}
-			<header className='bg-background/80 backdrop-blur-md flex justify-between items-center px-lg py-md w-full z-40 sticky top-0'>
-				<div className='flex items-center gap-md flex-1 max-w-xl'>
-					<div className='flex gap-sm'>
-						<button onClick={() => window.history.back()} className='bg-black/40 p-xs rounded-full flex items-center justify-center'>
-							<span className='material-symbols-outlined'>chevron_left</span>
-						</button>
-						<button className='bg-black/40 p-xs rounded-full flex items-center justify-center opacity-50'>
-							<span className='material-symbols-outlined'>chevron_right</span>
-						</button>
-					</div>
-				</div>
-				<div className='flex items-center gap-lg'>
-					<button className='text-on-surface-variant hover:text-primary transition-colors'>
-						<span className='material-symbols-outlined'>notifications</span>
-					</button>
-					<button className='text-on-surface-variant hover:text-primary transition-colors'>
-						<span className='material-symbols-outlined'>settings</span>
-					</button>
-				</div>
+		<div className='h-full flex flex-col overflow-y-auto bg-background no-scrollbar relative' style={{
+			backgroundImage: `linear-gradient(to bottom, ${accentColor}33 0%, var(--background) 500px)`
+		}}>
+			{/* Sticky Header */}
+			<header className='sticky top-0 z-50 flex items-center justify-between px-6 py-4 bg-background/60 backdrop-blur-xl border-b border-white/5'>
+				<button 
+					onClick={() => navigate(-1)} 
+					className='w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors text-white'
+				>
+					<ArrowLeft size={24} />
+				</button>
 			</header>
 
-			{/* Artist Hero Section */}
-			<section className='relative h-[400px] flex flex-col justify-end px-xl pb-xl'>
-				<div className='absolute inset-0 z-0'>
+			{/* Hero Section */}
+			<section className='px-6 md:px-12 pt-8 pb-10 flex flex-col md:flex-row items-end gap-6 md:gap-10'>
+				<div className='w-48 h-48 md:w-64 md:h-64 flex-shrink-0 shadow-2xl rounded-lg overflow-hidden'>
 					<img
 						src={currentAlbum?.imageUrl}
 						alt={currentAlbum?.title}
 						className='w-full h-full object-cover'
 					/>
-					<div className='absolute inset-0 artist-hero-gradient' />
 				</div>
-				<div className='relative z-10 space-y-md'>
-					<div className='flex items-center gap-sm'>
-						<span className='material-symbols-outlined text-blue-400' style={{ fontVariationSettings: "'FILL' 1" }}>
-							verified
-						</span>
-						<span className='font-label-md text-label-md uppercase tracking-widest'>Verified Artist</span>
-					</div>
-					<h1 className='font-display-lg text-display-lg md:text-[96px] text-on-surface tracking-tighter leading-tight'>
+				
+				<div className='flex flex-col gap-2 flex-grow'>
+					<span className='font-bold text-label-md uppercase tracking-widest text-text-secondary'>
+						Album
+					</span>
+					<h1 className='text-display-lg md:text-[80px] font-bold text-white tracking-tighter leading-none mb-2'>
 						{currentAlbum?.title}
 					</h1>
-					<p className='font-body-lg text-body-lg text-secondary'>
-						{currentAlbum?.artist} • {currentAlbum?.songs.length} songs • {currentAlbum?.releaseYear}
-					</p>
+					
+					<div className='flex items-center gap-2 mt-2'>
+						<div className='w-8 h-8 rounded-full overflow-hidden border border-white/10'>
+							<img src={currentAlbum?.imageUrl} alt={currentAlbum?.artist} className='w-full h-full object-cover' />
+						</div>
+						<p className='font-body-lg text-white font-semibold'>
+							{currentAlbum?.artist}
+						</p>
+						<span className='text-text-secondary'>• {currentAlbum?.releaseYear} • {currentAlbum?.songs.length} songs</span>
+					</div>
 				</div>
 			</section>
 
-			{/* Controls Bar */}
-			<div className='px-xl py-lg flex items-center gap-xl bg-gradient-to-b from-black/40 to-transparent'>
+			{/* Action Buttons */}
+			<div className='px-6 md:px-12 py-4 flex items-center gap-6 relative'>
 				<button
 					onClick={handlePlayAlbum}
-					className='w-14 h-14 bg-primary text-on-primary rounded-full flex items-center justify-center hover:scale-105 transition-transform active:scale-95 shadow-lg shadow-primary/20'
+					className='w-16 h-16 bg-apple-red text-white rounded-full flex items-center justify-center hover:scale-105 transition-transform shadow-lg'
 				>
-					<span className='material-symbols-outlined text-4xl' style={{ fontVariationSettings: "'FILL' 1" }}>
-						{isAlbumPlaying ? 'pause' : 'play_arrow'}
-					</span>
+					{isAlbumPlaying ? (
+						<Pause size={28} fill="currentColor" />
+					) : (
+						<Play size={28} fill="currentColor" className="ml-1" />
+					)}
 				</button>
-				<button className='px-xl py-sm border-2 border-outline-variant rounded-full font-bold hover:border-on-surface transition-colors'>
-					Follow
+				
+				<button className='w-10 h-10 flex items-center justify-center text-text-secondary hover:text-white transition-colors'>
+					<Shuffle size={24} />
 				</button>
-				<button className='text-on-surface-variant hover:text-on-surface'>
-					<span className='material-symbols-outlined'>more_horiz</span>
+				
+				<button className='w-10 h-10 flex items-center justify-center text-text-secondary hover:text-white transition-colors'>
+					<Heart size={24} />
+				</button>
+				
+				<button className='w-10 h-10 flex items-center justify-center text-text-secondary hover:text-white transition-colors'>
+					<MoreHorizontal size={24} />
 				</button>
 			</div>
 
-			{/* Main Grid Layout */}
-			<div className='px-xl grid grid-cols-1 lg:grid-cols-3 gap-xl'>
-				{/* Popular Tracks (2/3 width on desktop) */}
-				<div className='lg:col-span-2'>
-					<h2 className='font-title-md text-title-md mb-md'>Popular</h2>
-					<div className='flex flex-col'>
-						{currentAlbum?.songs.map((song, index) => {
-							const isCurrentSong = currentSong?._id === song._id;
-							return (
-								<div
-									key={song._id}
-									onClick={() => handlePlaySong(index)}
-									className='group flex items-center gap-md p-md rounded-lg hover:bg-surface-container-high transition-colors cursor-pointer'
-								>
-									<span className='w-6 text-on-surface-variant group-hover:hidden'>
-										{isCurrentSong && isPlaying ? (
-											<span className='material-symbols-outlined text-primary text-[18px]'>equalizer</span>
-										) : (
-											index + 1
-										)}
-									</span>
-									<span
-										className='w-6 hidden group-hover:block material-symbols-outlined text-primary'
-										style={{ fontVariationSettings: "'FILL' 1" }}
-									>
-										play_arrow
-									</span>
-
-									<div className='w-12 h-12 bg-surface-container rounded overflow-hidden'>
-										<img src={song.imageUrl} alt={song.title} className='w-full h-full object-cover' />
-									</div>
-
-									<div className='flex-1'>
-										<p className={`font-body-lg text-body-lg ${isCurrentSong ? 'text-primary' : 'text-on-surface'}`}>
-											{song.title}
-										</p>
-										<p className='font-body-sm text-body-sm text-on-surface-variant'>
-											{song.artist}
-										</p>
-									</div>
-
-									<span className='font-body-sm text-body-sm text-on-surface-variant'>
-										{formatDuration(song.duration)}
-									</span>
+			{/* Tracklist */}
+			<section className='px-6 md:px-12 pb-32 pt-4'>
+				<div className='flex flex-col gap-2'>
+					{currentAlbum?.songs.map((song, index) => {
+						const isCurrentSong = currentSong?._id === song._id;
+						
+						return (
+							<div
+								key={song._id}
+								onClick={() => handlePlaySong(index)}
+								className='group flex items-center py-3 px-4 rounded-xl apple-glass hover:bg-white/10 transition-all cursor-pointer'
+							>
+								{/* Track Number / Play Button */}
+								<div className='w-10 flex-shrink-0 flex items-center justify-center text-text-secondary font-medium'>
+									{isCurrentSong && isPlaying ? (
+										<div className="flex gap-[2px] h-4 items-end">
+											<div className="w-1 bg-apple-red h-full animate-bounce" style={{ animationDelay: '0ms' }} />
+											<div className="w-1 bg-apple-red h-2/3 animate-bounce" style={{ animationDelay: '150ms' }} />
+											<div className="w-1 bg-apple-red h-1/2 animate-bounce" style={{ animationDelay: '300ms' }} />
+										</div>
+									) : (
+										<>
+											<span className='group-hover:hidden'>{index + 1}</span>
+											<Play size={16} fill="currentColor" className='hidden group-hover:block text-white' />
+										</>
+									)}
 								</div>
-							);
-						})}
-					</div>
-				</div>
 
-				{/* Artist Bio Section (1/3 width on desktop) */}
-				<div className='bg-surface-container-high rounded-xl p-lg h-fit border border-outline-variant/30'>
-					<h3 className='font-title-md text-title-md mb-md'>About</h3>
-					<div className='aspect-square w-full rounded-lg overflow-hidden mb-md'>
-						<img
-							src={currentAlbum?.imageUrl}
-							alt={currentAlbum?.title}
-							className='w-full h-full object-cover'
-						/>
-					</div>
-					<p className='font-body-sm text-body-sm text-on-surface-variant leading-relaxed mb-lg'>
-						Explore {currentAlbum?.artist}'s discography. Known for their unique sound and incredible artistry, this album showcases their best work yet.
-					</p>
-					<button className='text-on-surface font-bold hover:underline'>Read more</button>
+								{/* Title & Artist */}
+								<div className='flex-grow min-w-0 pr-4'>
+									<p className={`text-body-lg font-medium truncate ${isCurrentSong ? 'text-apple-red' : 'text-white'}`}>
+										{song.title}
+									</p>
+									<p className='text-body-sm text-text-secondary truncate'>
+										{song.artist}
+									</p>
+								</div>
+								
+								{/* Actions */}
+								<div className='w-10 flex-shrink-0 flex justify-center opacity-0 group-hover:opacity-100 transition-opacity'>
+									<button className='text-text-secondary hover:text-white'>
+										<Heart size={16} />
+									</button>
+								</div>
+
+								{/* Duration */}
+								<div className='w-12 flex-shrink-0 text-right text-text-secondary text-body-sm tabular-nums'>
+									{formatDuration(song.duration)}
+								</div>
+							</div>
+						);
+					})}
 				</div>
-			</div>
+				
+				<div className="mt-12 mb-8 flex flex-col gap-1">
+					<p className="text-text-secondary text-body-sm font-medium">
+						{new Date().getFullYear()} {currentAlbum?.artist}
+					</p>
+				</div>
+			</section>
 		</div>
 	);
 };

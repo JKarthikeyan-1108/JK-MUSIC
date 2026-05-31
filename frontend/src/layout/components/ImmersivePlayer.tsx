@@ -2,6 +2,10 @@ import { usePlayerStore } from "@/stores/usePlayerStore";
 import { useUserStore } from "@/stores/useUserStore";
 import { Slider } from "@/components/ui/slider";
 import { useEffect, useRef, useState } from "react";
+import LyricsView from "./LyricsView";
+import { useAccentColor } from "@/hooks/useAccentColor";
+import { Play, Pause, SkipBack, SkipForward, Shuffle, Repeat, Heart, ChevronDown, ListMusic, Volume2, VolumeX, MessageSquare } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface ImmersivePlayerProps {
 	onClose: () => void;
@@ -13,25 +17,19 @@ const formatTime = (seconds: number) => {
 	return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
 };
 
-// Mock lyrics since we don't have a lyrics API
-const MOCK_LYRICS = [
-	"Yeah, you're lookin' at the truth",
-	"The money never lie, no",
-	"I'm the one, yeah, I'm the one",
-	"Early mornin' in the dawn",
-	"Know you wanna ride now",
-	"I'm the one, yeah, I'm the one",
-	"Yeah, you're sick of all those other imitators",
-	"Don't let the only real one intimidate ya",
-	"See you watchin', don't run outta time now",
-];
-
 const ImmersivePlayer = ({ onClose }: ImmersivePlayerProps) => {
-	const { currentSong, isPlaying, togglePlay, playNext, playPrevious, isShuffle, isRepeat, toggleShuffle, toggleRepeat, toggleQueue } = usePlayerStore();
+	const { currentSong, isPlaying, togglePlay, playNext, playPrevious, isShuffle, isRepeat, toggleShuffle, toggleRepeat, queue } = usePlayerStore();
 	const { likedSongs, toggleLike } = useUserStore();
+	const accentColor = useAccentColor(currentSong?.imageUrl);
 	
 	const [currentTime, setCurrentTime] = useState(0);
 	const [duration, setDuration] = useState(0);
+	const [activeTab, setActiveTab] = useState<"lyrics" | "queue">("lyrics");
+	const [volume, setVolume] = useState(() => {
+		const savedVolume = localStorage.getItem("playerVolume");
+		return savedVolume ? parseInt(savedVolume, 10) : 75;
+	});
+	
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 	const isDraggingRef = useRef(false);
 
@@ -58,73 +56,99 @@ const ImmersivePlayer = ({ onClose }: ImmersivePlayerProps) => {
 
 	if (!currentSong) return null;
 
+	const handleSeek = (time: number) => {
+		if (audioRef.current) {
+			audioRef.current.currentTime = time;
+			setCurrentTime(time);
+		}
+	};
+
 	return (
-		<div className='fixed inset-0 z-[100] bg-background text-on-surface overflow-hidden flex flex-col'>
-			{/* Ambient Gradient Background based on album art (simulated with CSS variables or fixed gradient for now) */}
-			<div className='absolute inset-0 bg-gradient-to-br from-primary/20 via-background to-secondary/10 opacity-80' />
-			<div className='absolute inset-0 backdrop-blur-3xl' />
+		<motion.div 
+			initial={{ y: "100%", opacity: 0, scale: 0.95 }}
+			animate={{ y: 0, opacity: 1, scale: 1 }}
+			exit={{ y: "100%", opacity: 0, scale: 0.95 }}
+			transition={{ type: "spring", damping: 25, stiffness: 200 }}
+			className='fixed inset-0 z-[100] bg-background text-white overflow-hidden flex flex-col'
+		>
+			{/* Ambient Gradient Background */}
+			<div 
+				className='absolute inset-0 opacity-40 transition-colors duration-1000 blur-[100px]'
+				style={{ backgroundColor: accentColor }}
+			/>
+			<div className='absolute inset-0 bg-background/80 backdrop-blur-3xl' />
 
 			{/* Top Bar */}
-			<div className='relative z-10 flex items-center justify-between p-lg'>
+			<div className='relative z-10 flex items-center justify-between p-6 md:p-8'>
 				<button
 					onClick={onClose}
-					className='w-12 h-12 flex items-center justify-center rounded-full hover:bg-surface-variant transition-colors'
+					className='w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors'
 				>
-					<span className='material-symbols-outlined text-[32px]'>expand_more</span>
+					<ChevronDown size={24} />
 				</button>
-				<div className='text-center'>
-					<p className='font-label-sm text-label-sm text-on-surface-variant tracking-widest uppercase'>
-						PLAYING FROM ALBUM
-					</p>
-					<h3 className='font-title-md text-title-md font-bold'>{currentSong.albumId || 'Melodix Premium'}</h3>
+				
+				<div className="flex bg-white/10 rounded-full p-1 border border-white/5">
+					<button 
+						onClick={() => setActiveTab("lyrics")}
+						className={`px-6 py-2 rounded-full text-label-md font-bold transition-colors ${activeTab === "lyrics" ? "bg-white/20 text-white shadow-sm" : "text-text-secondary hover:text-white"}`}
+					>
+						Lyrics
+					</button>
+					<button 
+						onClick={() => setActiveTab("queue")}
+						className={`px-6 py-2 rounded-full text-label-md font-bold transition-colors ${activeTab === "queue" ? "bg-white/20 text-white shadow-sm" : "text-text-secondary hover:text-white"}`}
+					>
+						Playing Next
+					</button>
 				</div>
-				<button className='w-12 h-12 flex items-center justify-center rounded-full hover:bg-surface-variant transition-colors'>
-					<span className='material-symbols-outlined text-[28px]'>more_horiz</span>
-				</button>
+				
+				<div className="w-10 h-10" /> {/* Spacer for centering */}
 			</div>
 
-			{/* Main Content Split */}
-			<div className='relative z-10 flex-1 flex flex-col lg:flex-row max-w-7xl mx-auto w-full px-lg lg:px-xl pb-xl gap-xl'>
+			{/* Main Content */}
+			<div className='relative z-10 flex-1 flex flex-col lg:flex-row max-w-[1400px] mx-auto w-full px-6 md:px-12 pb-12 gap-8 lg:gap-16 h-full overflow-hidden'>
 				
 				{/* Left: Artwork and Controls */}
-				<div className='flex-1 flex flex-col justify-center items-center lg:items-start max-w-xl mx-auto lg:mx-0 w-full'>
-					{/* Album Art Container with Glassmorphism */}
-					<div className='w-full aspect-square max-w-[500px] mb-xl relative group'>
-						<div className='absolute inset-0 bg-primary/20 blur-[100px] rounded-full scale-90 group-hover:scale-100 transition-transform duration-1000' />
+				<div className='flex-1 flex flex-col justify-center items-center lg:items-start max-w-xl mx-auto lg:mx-0 w-full h-full pb-8 lg:pb-0'>
+					{/* Album Art */}
+					<motion.div 
+						className='w-full aspect-square max-w-[480px] mb-8 relative group rounded-2xl shadow-2xl overflow-hidden'
+						initial={{ scale: 0.9, opacity: 0 }}
+						animate={{ scale: 1, opacity: 1 }}
+						transition={{ delay: 0.1, duration: 0.5 }}
+					>
 						<img
 							src={currentSong.imageUrl}
 							alt={currentSong.title}
-							className='w-full h-full object-cover rounded-2xl shadow-2xl relative z-10'
+							className='w-full h-full object-cover transition-transform duration-1000'
 						/>
-					</div>
+					</motion.div>
 
-					{/* Track Info */}
-					<div className='w-full flex justify-between items-end mb-lg px-md lg:px-0'>
-						<div>
-							<h1 className='font-display-sm text-[36px] font-extrabold tracking-tighter mb-xs'>
+					{/* Track Info & Like */}
+					<div className='w-full flex justify-between items-center mb-6 max-w-[480px]'>
+						<div className="min-w-0 pr-4">
+							<h1 className='text-display-sm md:text-display-md font-bold tracking-tight text-white truncate'>
 								{currentSong.title}
 							</h1>
-							<p className='font-title-md text-title-md text-on-surface-variant'>
+							<p className='text-title-lg text-text-secondary truncate mt-1'>
 								{currentSong.artist}
 							</p>
 						</div>
 						<button 
 							onClick={() => toggleLike(currentSong._id)}
-							className={`transition-colors ${likedSongs.includes(currentSong._id) ? 'text-primary' : 'text-on-surface-variant hover:text-primary'}`}
+							className={`transition-colors flex-shrink-0 ${likedSongs.includes(currentSong._id) ? 'text-apple-red' : 'text-text-secondary hover:text-white'}`}
 						>
-							<span className='material-symbols-outlined text-[32px]' style={likedSongs.includes(currentSong._id) ? { fontVariationSettings: "'FILL' 1" } : undefined}>
-								favorite
-							</span>
+							<Heart size={32} fill={likedSongs.includes(currentSong._id) ? 'currentColor' : 'none'} />
 						</button>
 					</div>
 
 					{/* Scrubber */}
-					<div className='w-full mb-lg px-md lg:px-0'>
+					<div className='w-full mb-8 max-w-[480px]'>
 						<Slider
 							value={[currentTime]}
 							max={duration || 100}
 							step={1}
-							className='w-full h-2 hover:cursor-grab active:cursor-grabbing mb-sm'
+							className='w-full h-1.5 hover:cursor-grab active:cursor-grabbing mb-3'
 							onValueChange={(value) => {
 								setCurrentTime(value[0]);
 								isDraggingRef.current = true;
@@ -136,99 +160,123 @@ const ImmersivePlayer = ({ onClose }: ImmersivePlayerProps) => {
 								isDraggingRef.current = false;
 							}}
 						/>
-						<div className='flex justify-between font-label-md text-label-md text-on-surface-variant'>
+						<div className='flex justify-between text-caption text-text-secondary font-medium tabular-nums'>
 							<span>{formatTime(currentTime)}</span>
 							<span>{formatTime(duration)}</span>
 						</div>
 					</div>
 
 					{/* Primary Controls */}
-					<div className='w-full flex items-center justify-between px-md lg:px-0'>
+					<div className='w-full flex items-center justify-between max-w-[480px] mb-8'>
 						<button
 							onClick={toggleShuffle}
-							className={`transition-colors ${isShuffle ? 'text-primary' : 'text-on-surface-variant hover:text-on-surface'}`}
+							className={`transition-colors ${isShuffle ? 'text-apple-red' : 'text-text-secondary hover:text-white'}`}
 						>
-							<span className='material-symbols-outlined text-[28px]'>shuffle</span>
+							<Shuffle size={24} />
 						</button>
 
 						<button
 							onClick={playPrevious}
-							className='text-on-surface hover:text-primary active:scale-95 transition-all'
+							className='text-white hover:text-apple-red active:scale-95 transition-all'
 						>
-							<span className='material-symbols-outlined text-[48px]' style={{ fontVariationSettings: "'FILL' 1" }}>
-								skip_previous
-							</span>
+							<SkipBack size={40} fill="currentColor" />
 						</button>
 
 						<button
 							onClick={togglePlay}
-							className='w-20 h-20 bg-primary text-background rounded-full flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20'
+							className='w-20 h-20 bg-apple-red text-white rounded-full flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-xl shadow-apple-red/20'
 						>
-							<span className='material-symbols-outlined text-[48px]' style={{ fontVariationSettings: "'FILL' 1" }}>
-								{isPlaying ? 'pause' : 'play_arrow'}
-							</span>
+							{isPlaying ? (
+								<Pause size={36} fill="currentColor" />
+							) : (
+								<Play size={36} fill="currentColor" className="ml-2" />
+							)}
 						</button>
 
 						<button
 							onClick={playNext}
-							className='text-on-surface hover:text-primary active:scale-95 transition-all'
+							className='text-white hover:text-apple-red active:scale-95 transition-all'
 						>
-							<span className='material-symbols-outlined text-[48px]' style={{ fontVariationSettings: "'FILL' 1" }}>
-								skip_next
-							</span>
+							<SkipForward size={40} fill="currentColor" />
 						</button>
 
 						<button
 							onClick={toggleRepeat}
-							className={`transition-colors ${isRepeat ? 'text-primary' : 'text-on-surface-variant hover:text-on-surface'}`}
+							className={`transition-colors ${isRepeat ? 'text-apple-red' : 'text-text-secondary hover:text-white'}`}
 						>
-							<span className='material-symbols-outlined text-[28px]'>repeat</span>
+							<Repeat size={24} />
 						</button>
 					</div>
-				</div>
-
-				{/* Right: Lyrics / Queue Split */}
-				<div className='hidden lg:flex flex-1 flex-col gap-lg h-full max-h-[800px]'>
-					{/* Lyrics Card */}
-					<div className='flex-1 bg-surface-container/40 backdrop-blur-md rounded-3xl p-xl border border-outline-variant/20 overflow-hidden relative group'>
-						<div className='absolute top-0 left-0 w-full h-24 bg-gradient-to-b from-surface-container/90 to-transparent z-10 pointer-events-none' />
-						<div className='absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-surface-container/90 to-transparent z-10 pointer-events-none' />
-						
-						<div className='flex justify-between items-center mb-lg relative z-20'>
-							<h3 className='font-title-lg text-title-lg font-bold'>Lyrics</h3>
-							<button className='w-8 h-8 rounded-full bg-surface-variant flex items-center justify-center hover:bg-surface-container-highest transition-colors'>
-								<span className='material-symbols-outlined text-[20px]'>open_in_full</span>
-							</button>
-						</div>
-
-						<div className='overflow-y-auto no-scrollbar h-full pb-20 relative z-0 mask-image-linear'>
-							{MOCK_LYRICS.map((line, i) => (
-								<p
-									key={i}
-									className={`font-display-sm text-[28px] font-bold mb-md leading-tight transition-colors duration-300 ${
-										i === 3 ? 'text-on-surface' : 'text-on-surface-variant/40 hover:text-on-surface-variant/80'
-									}`}
-								>
-									{line}
-								</p>
-							))}
-						</div>
-					</div>
-
-					{/* Up Next Card */}
-					<div className='h-1/3 bg-surface-container/40 backdrop-blur-md rounded-3xl p-xl border border-outline-variant/20 flex flex-col'>
-						<div className='flex justify-between items-center mb-md'>
-							<h3 className='font-title-lg text-title-lg font-bold'>Up Next</h3>
-							<button onClick={() => { toggleQueue(); onClose(); }} className='text-on-surface-variant hover:text-on-surface text-label-md font-bold uppercase'>View Queue</button>
-						</div>
-						<div className='flex-1 flex items-center justify-center border-2 border-dashed border-outline-variant/30 rounded-2xl'>
-							<p className='text-on-surface-variant font-body-lg'>Add songs to queue</p>
-						</div>
+					
+					{/* Volume Control (Desktop) */}
+					<div className="hidden lg:flex items-center gap-3 w-full max-w-[480px]">
+						<VolumeX size={16} className="text-text-secondary" />
+						<Slider
+							value={[volume]}
+							max={100}
+							step={1}
+							className='flex-1'
+							onValueChange={(value) => {
+								setVolume(value[0]);
+								localStorage.setItem("playerVolume", value[0].toString());
+								if (audioRef.current) {
+									audioRef.current.volume = value[0] / 100;
+								}
+							}}
+						/>
+						<Volume2 size={16} className="text-text-secondary" />
 					</div>
 				</div>
 
+				{/* Right: Lyrics or Queue */}
+				<div className='flex-1 h-full max-h-[800px] bg-black/20 backdrop-blur-md rounded-[40px] border border-white/5 overflow-hidden flex flex-col relative'>
+					<AnimatePresence mode="wait">
+						{activeTab === "lyrics" ? (
+							<motion.div
+								key="lyrics"
+								initial={{ opacity: 0, x: 20 }}
+								animate={{ opacity: 1, x: 0 }}
+								exit={{ opacity: 0, x: -20 }}
+								transition={{ duration: 0.2 }}
+								className="h-full w-full absolute inset-0"
+							>
+								<LyricsView songId={currentSong._id} currentTime={currentTime} onSeek={handleSeek} />
+							</motion.div>
+						) : (
+							<motion.div
+								key="queue"
+								initial={{ opacity: 0, x: 20 }}
+								animate={{ opacity: 1, x: 0 }}
+								exit={{ opacity: 0, x: -20 }}
+								transition={{ duration: 0.2 }}
+								className="h-full w-full absolute inset-0 flex flex-col p-8"
+							>
+								<h2 className="text-title-lg font-bold text-white mb-6">Up Next</h2>
+								<div className="flex-1 overflow-y-auto no-scrollbar flex flex-col gap-2">
+									{queue.map((song, idx) => {
+										const isCurrent = currentSong._id === song._id;
+										return (
+											<div 
+												key={song._id + idx}
+												className={`flex items-center gap-4 p-3 rounded-xl transition-colors ${isCurrent ? 'bg-white/10' : 'hover:bg-white/5'}`}
+											>
+												<div className="w-12 h-12 rounded-lg overflow-hidden shrink-0">
+													<img src={song.imageUrl} alt={song.title} className="w-full h-full object-cover" />
+												</div>
+												<div className="flex-1 min-w-0">
+													<p className={`text-body-lg font-bold truncate ${isCurrent ? 'text-apple-red' : 'text-white'}`}>{song.title}</p>
+													<p className="text-body-sm text-text-secondary truncate">{song.artist}</p>
+												</div>
+											</div>
+										)
+									})}
+								</div>
+							</motion.div>
+						)}
+					</AnimatePresence>
+				</div>
 			</div>
-		</div>
+		</motion.div>
 	);
 };
 

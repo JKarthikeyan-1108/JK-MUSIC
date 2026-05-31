@@ -80,3 +80,15 @@ export const getTrendingSongs = async (req, res, next) => {
 		next(error);
 	}
 };
+
+export const getSongLyrics = async (req, res, next) => {
+	try {
+		const song = await Song.findById(req.params.id);
+		if (!song) {
+			return res.status(404).json({ message: "Song not found" });
+		}
+		res.json({ lyrics: song.lyrics || "" });
+	} catch (error) {
+		next(error);
+	}
+};
